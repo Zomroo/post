@@ -52,7 +52,7 @@ def handle_private_message(client, message):
 
         if len(links) > 0:
             # Save the links and send confirmation message
-            save_links(user_id, message.message_id, links)
+            save_links(user_id, message.id, links)
             confirm_text = "Links:\n\n" + "\n".join(links)
             keyboard = InlineKeyboardMarkup([
                 [InlineKeyboardButton("Confirm", callback_data="confirm"),
