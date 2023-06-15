@@ -17,7 +17,7 @@ def handle_message(client, message):
         link = message.text
         
         # Create the button with the link URL
-        button_confirm = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.message_id}")
+        button_confirm = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
         button_cancel = InlineKeyboardButton(text="Cancel", callback_data="cancel")
         keyboard = InlineKeyboardMarkup([[button_confirm, button_cancel]])
         
