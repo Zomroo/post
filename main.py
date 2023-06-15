@@ -23,7 +23,10 @@ def start_command(client, message):
 
 @app.on_message(filters.text & filters.user(authorized_users))
 def handle_text_message(client, message):
-    links = message.entities
+    links = []
+    for entity in message.entities:
+        if entity.type == "url":
+            links.append(message.text[entity.offset : entity.offset + entity.length])
     if not links:
         return
     preview_message = get_preview_message(links)
@@ -37,6 +40,7 @@ def handle_text_message(client, message):
     else:
         preview_text = preview_message
     message.reply_text(preview_text, reply_markup=reply_markup)
+
 
 @app.on_message(filters.photo & filters.user(authorized_users))
 def handle_photo_message(client, message):
