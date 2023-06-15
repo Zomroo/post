@@ -26,7 +26,7 @@ def handle_message(client, message):
             confirm_msg = f"Are you sure you want to send this link?\n\n{link}"
             client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard)
 
-    elif message.photo:
+    elif message.photo and message.reply_to_message:
         # Get the first photo from the message
         photo = message.photo[0]
         
@@ -67,7 +67,7 @@ def handle_button_click(client, callback_query):
             # Delete the original message
             client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
         
-        elif message.photo:
+        elif message.photo and message.reply_to_message:
             link = message.caption
             
             # Create the button with the link URL
@@ -76,7 +76,7 @@ def handle_button_click(client, callback_query):
             
             # Send the photo to the target channel
             channel_id = -1001424450330
-            client.send_photo(chat_id=channel_id, photo=message.photo.file_id, caption=link, reply_markup=keyboard)
+            client.send_photo(chat_id=channel_id, photo=message.reply_to_message.photo.file_id, caption=link, reply_markup=keyboard)
             
             # Delete the original message
             client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
