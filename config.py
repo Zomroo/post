@@ -20,7 +20,7 @@ def forward_link(update, context):
     chat_member = bot.get_chat_member(CHANNEL_ID, bot.id)
 
     if link and chat_member.status == 'administrator':
-        bot.send_message(CHANNEL_ID, link)
+        bot.forward_message(CHANNEL_ID, message.chat_id, message.message_id)
 
     # Optional: Send a confirmation message to the user
     bot.send_message(chat_id, 'Link forwarded successfully!')
