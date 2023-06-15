@@ -1,4 +1,5 @@
 from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Create a Pyrogram client
 api_id = 14091414
@@ -15,9 +16,14 @@ def handle_message(client, message):
     if message.text.startswith('http'):
         link = message.text
         
-        # Copy the message to the target channel
+        # Create the button with the link URL
+        button = InlineKeyboardButton(text="Click here", url=link)
+        keyboard = InlineKeyboardMarkup([[button]])
+        
+        # Send the message to the target channel
         channel_id = -1001424450330
-        client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id)
+        caption = f"Link: {link}"
+        client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
 
 
 # Start the bot
