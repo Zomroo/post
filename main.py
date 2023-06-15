@@ -1,4 +1,4 @@
-from pyrogram import Client
+from pyrogram import Client, filters
 
 # Create a Pyrogram client
 api_id = 14091414
