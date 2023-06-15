@@ -1,41 +1,46 @@
-from telegram.ext import Updater, MessageHandler, Filters
+import logging
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-# Telegram bot token (replace with your own)
+# Set up logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+
+# Define your bot token here
 TOKEN = '5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo'
 
-# Channel ID (replace with your own)
-CHANNEL_ID = -1001424450330
+# Create an Updater object and pass your bot token
+updater = Updater(TOKEN, use_context=True)
 
+# Get the dispatcher to register handlers
+dispatcher = updater.dispatcher
+
+# Define a command handler for the start command
+def start(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please send me a link and I'll forward it to all the channels and groups where I'm added.")
+
+# Register the start command handler
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)
+
+# Define a message handler
 def forward_link(update, context):
-    message = update.message
-    chat_id = message.chat_id
-    link = None
+    # Get the link from the message
+    link = update.message.text
+    
+    # Get the list of all chats where the bot is added
+    chats = context.bot.getChatAdministrators(update.effective_chat.id)
+    
+    # Forward or send the link to all chats
+    for chat in chats:
+        try:
+            context.bot.send_message(chat_id=chat.chat.id, text=link)
+        except Exception as e:
+            # Handle any errors that occur during sending
+            print(f"Error forwarding link to chat {chat.chat.title}: {str(e)}")
 
-    # Check if the message contains a link
-    if message.entities and message.entities[0].type == 'url':
-        link = message.text
+# Register the message handler
+link_handler = MessageHandler(Filters.text & (~Filters.command), forward_link)
+dispatcher.add_handler(link_handler)
 
-    # Check if the bot is an admin in the channel
-    bot = context.bot
-    chat_member = bot.get_chat_member(CHANNEL_ID, bot.id)
-
-    if link and chat_member.status == 'administrator':
-        bot.forward_message(CHANNEL_ID, message.chat_id, message.message_id)
-
-    # Optional: Send a confirmation message to the user
-    bot.send_message(chat_id, 'Link forwarded successfully!')
-
-def main():
-    updater = Updater(TOKEN, use_context=True)
-    dispatcher = updater.dispatcher
-
-    # Register the message handler
-    message_handler = MessageHandler(Filters.text, forward_link)
-    dispatcher.add_handler(message_handler)
-
-    # Start the bot
-    updater.start_polling()
-    updater.idle()
-
-if __name__ == '__main__':
-    main()
+# Start the bot
+updater.start_polling()
