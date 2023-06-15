@@ -27,8 +27,8 @@ def handle_message(client, message):
             client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard)
 
     elif message.photo:
-        # Get the first photo from the message
-        photo = message.photo[0]
+        # Get the photo from the message
+        photo = message.photo
         
         # Check if the photo has a caption containing a link
         if photo.caption and photo.caption.startswith('http'):
@@ -76,7 +76,7 @@ def handle_button_click(client, callback_query):
             
             # Send the photo to the target channel
             channel_id = -1001424450330
-            client.send_photo(chat_id=channel_id, photo=message.reply_to_message.photo.file_id, caption=link, reply_markup=keyboard)
+            client.send_photo(chat_id=channel_id, photo=message.photo.file_id, caption=link, reply_markup=keyboard)
             
             # Delete the original message
             client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
