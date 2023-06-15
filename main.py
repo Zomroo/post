@@ -17,7 +17,7 @@ def handle_message(client, message):
         
         # Copy the message to the target channel
         channel_id = -1001424450330
-        client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.message_id)
+        client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id)
 
 
 # Start the bot
