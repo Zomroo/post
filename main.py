@@ -12,7 +12,7 @@ app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 # Handler for incoming messages
 @app.on_message(filters.private)
 def handle_message(client, message):
-    if message.text.startswith('http'):
+    if message.text and message.text.startswith('http'):
         handle_link_message(client, message)
     elif message.photo:
         handle_photo_message(client, message)
@@ -53,7 +53,7 @@ def handle_button_click(client, callback_query):
     if callback_query.data == "confirm":
         # Get the original message data
         message = callback_query.message
-        if message.text.startswith('http'):
+        if message.text and message.text.startswith('http'):
             link = message.text.split("\n\n")[1]
             
             # Create the button with the link URL
