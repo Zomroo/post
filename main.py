@@ -43,8 +43,8 @@ def handle_callback(client, callback_query):
         client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
     elif callback_query.data == "cancel":
-        # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
+        # No need to do anything if the user clicks "Cancel"
+        pass
 
 
 # Start the bot
