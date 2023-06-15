@@ -16,7 +16,7 @@ dispatcher = updater.dispatcher
 
 # Define a command handler for the start command
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please send me a link and I'll forward it to all the channels and groups where I'm added.")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please send me a link and I'll forward it to all the channels and groups where I'm an admin.")
 
 # Register the start command handler
 start_handler = CommandHandler('start', start)
@@ -27,16 +27,21 @@ def forward_link(update, context):
     # Get the link from the message
     link = update.message.text
     
-    # Get the list of all chats where the bot is added
-    chats = context.bot.getChatAdministrators(update.effective_chat.id)
+    # Check if the bot is an admin in the chat
+    chat_member = context.bot.get_chat_member(update.effective_chat.id, context.bot.id)
+    if chat_member.status == "administrator":
+        # Get the list of all chats where the bot is added
+        chats = context.bot.getChatAdministrators(update.effective_chat.id)
     
-    # Forward or send the link to all chats
-    for chat in chats:
-        try:
-            context.bot.send_message(chat_id=chat.chat.id, text=link)
-        except Exception as e:
-            # Handle any errors that occur during sending
-            print(f"Error forwarding link to chat {chat.chat.title}: {str(e)}")
+        # Forward or send the link to all chats
+        for chat in chats:
+            try:
+                context.bot.send_message(chat_id=chat.chat.id, text=link)
+            except Exception as e:
+                # Handle any errors that occur during sending
+                print(f"Error forwarding link to chat {chat.chat.title}: {str(e)}")
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I can't forward links to chats where I'm not an admin.")
 
 # Register the message handler
 link_handler = MessageHandler(Filters.text & (~Filters.command), forward_link)
