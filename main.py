@@ -16,7 +16,7 @@ def handle_message(client, message):
         
         # Forward the link to the target channel
         channel_id = -1001424450330
-        client.forward_messages(chat_id=channel_id, from_chat_id=message.chat.id, message_ids=message.id)
+        client.forward_messages(chat_id=channel_id, message_ids=message.id)
 
 
 # Start the bot
