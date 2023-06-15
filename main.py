@@ -56,7 +56,7 @@ def handle_private_message(client, message):
             return
 
         # Save the links and send the confirmation message
-        save_links(user_id, message.message_id, links)
+        save_links(user_id, message.id, links)
         confirm_text = "Links:\n\n" + "\n".join(links)
         keyboard = InlineKeyboardMarkup([
             [InlineKeyboardButton("Confirm", callback_data="confirm"),
@@ -94,7 +94,7 @@ def handle_private_message(client, message):
 @app.on_callback_query()
 def handle_callback_query(client, callback_query):
     user_id = callback_query.from_user.id
-    message_id = callback_query.message.message_id
+    message_id = callback_query.message.id
     data = callback_query.data
 
     if data == "confirm":
