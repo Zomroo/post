@@ -1,9 +1,9 @@
 import pyrogram
 
 # Get the API ID, API hash, and bot token from config.py
-api_id = int(config["api_id"])
-api_hash = config["api_hash"]
-bot_token = config["bot_token"]
+api_id = int(config["14091414"])
+api_hash = config["1e26ebacf23466ed6144d29496aa5d5b"]
+bot_token = config["5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo"]
 
 # Create a Pyrogram client
 client = pyrogram.Client(
