@@ -29,7 +29,7 @@ def handle_link_message(client, message):
     
     # Send the confirmation message to the user
     confirm_msg = f"Are you sure you want to send this link?\n\n{link}"
-    client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard, reply_to_message_id=message.id)
+    client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard)
 
 
 def handle_photo_message(client, message):
@@ -70,7 +70,7 @@ def handle_button_click(client, callback_query):
     
     elif callback_query.data == "cancel":
         # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
 
 
 # Start the bot
