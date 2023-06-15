@@ -11,12 +11,12 @@ app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 @app.on_message(filters.private)
 def handle_message(client, message):
     # Check if the message contains a link
-    if message.text.startswith('http'):
-        link = message.text
+    if message.entities and message.entities[0].type == "url":
+        link = message.entities[0].url
         
         # Forward the link to the target channel
         channel_id = -1001424450330
-        client.forward_messages(chat_id=channel_id, message_ids=message.id)
+        client.send_message(chat_id=channel_id, text=link)
 
 
 # Start the bot
