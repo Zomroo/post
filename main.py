@@ -48,7 +48,7 @@ def handle_photo_message(client, message):
 
 # Handler for button callbacks
 @app.on_callback_query()
-def handle_button_click(client, callback_query):
+def handle_button_click(client, callback_query, **kwargs):
     # Check the callback data
     if callback_query.data == "confirm":
         # Get the original message data
