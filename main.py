@@ -45,45 +45,48 @@ def handle_private_message(client, message):
     if message.text:
         # Extract links from the message text
         links = message.text.split("\n")
+        links = [link.strip() for link in links]
+
+        if not links:
+            client.send_message(chat_id, "No links found in the message.")
+            return
 
         if len(links) > 3:
             client.send_message(chat_id, "Max link count exceeded. Please send up to 3 links.")
             return
 
-        if len(links) > 0:
-            # Save the links and send confirmation message
-            save_links(user_id, message.id, links)
-            confirm_text = "Links:\n\n" + "\n".join(links)
-            keyboard = InlineKeyboardMarkup([
-                [InlineKeyboardButton("Confirm", callback_data="confirm"),
-                 InlineKeyboardButton("Cancel", callback_data="cancel")]
-            ])
-            client.send_message(chat_id, confirm_text, reply_markup=keyboard)
-        else:
-            client.send_message(chat_id, "No links found in the message.")
+        # Save the links and send the confirmation message
+        save_links(user_id, message.message_id, links)
+        confirm_text = "Links:\n\n" + "\n".join(links)
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("Confirm", callback_data="confirm"),
+             InlineKeyboardButton("Cancel", callback_data="cancel")]
+        ])
+        client.send_message(chat_id, confirm_text, reply_markup=keyboard)
 
     elif message.photo:
         if message.caption:
             # Extract links from the message caption
             links = message.caption.split("\n")
+            links = [link.strip() for link in links]
+
+            if not links:
+                client.send_message(chat_id, "No links found in the message caption.")
+                return
 
             if len(links) > 3:
                 client.send_message(chat_id, "Max link count exceeded. Please send up to 3 links.")
                 return
 
-            if len(links) > 0:
-                # Save the image, links, and send confirmation message
-                file_id = message.photo.file_id
-                save_image(user_id, message.message_id, links, file_id)
-                confirm_text = "Image with Links:\n\n" + "\n".join(links)
-                keyboard = InlineKeyboardMarkup([
-                    [InlineKeyboardButton("Confirm", callback_data="confirm"),
-                     InlineKeyboardButton("Cancel", callback_data="cancel")]
-                ])
-                client.send_message(chat_id, confirm_text, reply_markup=keyboard)
-            else:
-                client.send_message(chat_id, "No links found in the message caption.")
-
+            # Save the image, links, and send the confirmation message
+            file_id = message.photo.file_id
+            save_image(user_id, message.message_id, links, file_id)
+            confirm_text = "Image with Links:\n\n" + "\n".join(links)
+            keyboard = InlineKeyboardMarkup([
+                [InlineKeyboardButton("Confirm", callback_data="confirm"),
+                 InlineKeyboardButton("Cancel", callback_data="cancel")]
+            ])
+            client.send_message(chat_id, confirm_text, reply_markup=keyboard)
         else:
             client.send_message(chat_id, "No links found in the message caption.")
 
@@ -91,7 +94,7 @@ def handle_private_message(client, message):
 @app.on_callback_query()
 def handle_callback_query(client, callback_query):
     user_id = callback_query.from_user.id
-    message_id = callback_query.message.id
+    message_id = callback_query.message.message_id
     data = callback_query.data
 
     if data == "confirm":
@@ -101,16 +104,16 @@ def handle_callback_query(client, callback_query):
             links = links_data["links"]
 
             # Process the links and send the post to the channel
-            # Modify this part according to your needs
-            post_text = "Links:\n\n"
-            buttons = []
+            if len(links) > 0:
+                post_text = "Links:\n\n"
+                buttons = []
 
-            for i, link in enumerate(links, start=1):
-                post_text += f"Link{i}: [{link}]({link})\n"
-                buttons.append(InlineKeyboardButton(f"Link{i}", url=link))
+                for i, link in enumerate(links, start=1):
+                    post_text += f"Link{i}: [{link}]({link})\n"
+                    buttons.append(InlineKeyboardButton(f"Link{i}", url=link))
 
-            reply_markup = InlineKeyboardMarkup([buttons])
-            app.send_message(-1001424450330, post_text, reply_markup=reply_markup)
+                reply_markup = InlineKeyboardMarkup([buttons])
+                app.send_message(-1001424450330, post_text, reply_markup=reply_markup)
 
             # Clean up and delete the stored links
             links_collection.delete_one({"user_id": user_id, "message_id": message_id})
@@ -122,16 +125,16 @@ def handle_callback_query(client, callback_query):
             links = image_data["links"]
 
             # Process the links and send the image and post to the channel
-            # Modify this part according to your needs
-            post_text = "Image with Links:\n\n"
-            buttons = []
+            if len(links) > 0:
+                post_text = "Image with Links:\n\n"
+                buttons = []
 
-            for i, link in enumerate(links, start=1):
-                post_text += f"Link{i}: [{link}]({link})\n"
-                buttons.append(InlineKeyboardButton(f"Link{i}", url=link))
+                for i, link in enumerate(links, start=1):
+                    post_text += f"Link{i}: [{link}]({link})\n"
+                    buttons.append(InlineKeyboardButton(f"Link{i}", url=link))
 
-            reply_markup = InlineKeyboardMarkup([buttons])
-            app.send_photo(-1001424450330, file_id, caption=post_text, reply_markup=reply_markup)
+                reply_markup = InlineKeyboardMarkup([buttons])
+                app.send_photo(-1001424450330, file_id, caption=post_text, reply_markup=reply_markup)
 
             # Clean up and delete the stored image and links
             images_collection.delete_one({"user_id": user_id, "message_id": message_id})
