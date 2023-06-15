@@ -30,9 +30,9 @@ def handle_message(client, message):
         # Get the photo from the message
         photo = message.photo
         
-        # Check if the photo has a caption containing a link
-        if photo.caption and photo.caption.startswith('http'):
-            link = photo.caption
+        # Check if the message has a caption containing a link
+        if message.caption and message.caption.startswith('http'):
+            link = message.caption
             
             # Create the button with the link URL
             button_confirm = InlineKeyboardButton(text="Confirm", callback_data="confirm")
