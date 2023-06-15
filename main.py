@@ -91,7 +91,7 @@ def handle_private_message(client, message):
 @app.on_callback_query()
 def handle_callback_query(client, callback_query):
     user_id = callback_query.from_user.id
-    message_id = callback_query.message.message_id
+    message_id = callback_query.message.id
     data = callback_query.data
 
     if data == "confirm":
