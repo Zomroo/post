@@ -67,16 +67,10 @@ def handle_button_click(client, callback_query):
             
             # Delete the original message
             client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
-        
-        # Respond to the callback query
-        callback_query.answer()
     
     elif callback_query.data == "cancel":
         # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
-        
-        # Respond to the callback query
-        callback_query.answer()
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
 
 
 # Start the bot
