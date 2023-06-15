@@ -1,71 +1,41 @@
-# bot.py
+import pyrogram
 
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from config import api_id, api_hash, bot_token, authorized_users, channel_id
+# Get the API ID, API hash, and bot token from config.py
+api_id = int(config["api_id"])
+api_hash = config["api_hash"]
+bot_token = config["bot_token"]
 
-app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
+# Create a Pyrogram client
+client = pyrogram.Client(
+    "my_bot",
+    api_id=api_id,
+    api_hash=api_hash,
+    bot_token=bot_token,
+)
 
-def get_preview_message(links):
-    if len(links) == 1:
-        return f"Link 1 - {links[0]}"
-    elif len(links) <= 3:
-        buttons = [
-            InlineKeyboardButton(f"Link {i+1}", url=link) for i, link in enumerate(links)
-        ]
-        return "Links with buttons: " + " ".join([f"Link {i+1}" for i in range(len(links))]), buttons
-    else:
-        return None
+# Define a function to handle incoming messages
+@client.on_message
+async def handle_message(message):
+    # Check if the message was sent by an authorized user
+    if message.from_user.id in authorized_users:
+        # Check if the message contains a link
+        if message.text and message.text.startswith("https://"):
+            # Get the link from the message
+            link = message.text
+            # Create a preview of the link
+            preview = await client.get_link_preview(link)
+            # Send the preview to the user
+            await message.reply(preview)
+            # Check if the user clicks on the "Confirm" button
+            if message.reply_to_message.text == "Confirm":
+                # Send the link to the channel
+                await client.send_message(-1001424450330, link)
+        elif message.photo and message.photo.caption and message.photo.caption.startswith("https://"):
+            link = message.photo.caption
+            preview = await client.get_link_preview(link)
+            await message.reply(preview)
+            if message.reply_to_message.text == "Confirm":
+                await client.send_message(-1001424450330, link)
 
-@app.on_message(filters.command("start") & filters.user(authorized_users))
-def start_command(client, message):
-    message.reply_text("Send a link or an image with a link as the caption.")
-
-@app.on_message(filters.text & filters.user(authorized_users))
-def handle_text_message(client, message):
-    links = []
-    for entity in message.entities:
-        if entity.type == "url":
-            links.append(message.text[entity.offset : entity.offset + entity.length])
-    if not links:
-        return
-    preview_message = get_preview_message(links)
-    if not preview_message:
-        message.reply_text("Too many links. Maximum 3 links are allowed.")
-        return
-    reply_markup = None
-    if isinstance(preview_message, tuple):
-        preview_text, buttons = preview_message
-        reply_markup = InlineKeyboardMarkup([buttons])
-    else:
-        preview_text = preview_message
-    message.reply_text(preview_text, reply_markup=reply_markup)
-
-
-@app.on_message(filters.photo & filters.user(authorized_users))
-def handle_photo_message(client, message):
-    links = [link.url for link in message.caption_entities if link.type == "url"]
-    if not links:
-        return
-    preview_message = get_preview_message(links)
-    if not preview_message:
-        message.reply_text("Too many links. Maximum 3 links are allowed.")
-        return
-    reply_markup = None
-    if isinstance(preview_message, tuple):
-        preview_text, buttons = preview_message
-        reply_markup = InlineKeyboardMarkup([buttons])
-    else:
-        preview_text = preview_message
-    message.reply_photo(message.photo.file_id, caption=preview_text, reply_markup=reply_markup)
-
-@app.on_callback_query(filters.user(authorized_users))
-def handle_callback_query(client, query):
-    if query.data.startswith("confirm"):
-        links = query.data.split(":")[1:]
-        post_text = " ".join([f"Link {i+1}" for i in range(len(links))])
-        for link in links:
-            post_text += f"\n{link}"
-        app.send_message(channel_id, post_text)
-
-app.run()
+# Run the bot
+client.run()
