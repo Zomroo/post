@@ -1,36 +1,41 @@
-import telebot
-import pymongo
+from telegram.ext import Updater, MessageHandler, Filters
 
-bot = telebot.TeleBot("5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo")
+# Telegram bot token (replace with your own)
+TOKEN = '5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo'
 
-# Connect to MongoDB
-client = pymongo.MongoClient("mongodb+srv://Zoro:Zoro@cluster0.x1vigdr.mongodb.net/?retryWrites=true&w=majority")
-db = client["your_database"]
-collection = db["links"]
+# Channel ID (replace with your own)
+CHANNEL_ID = -1001424450330
 
-# Define a function to save a link
-def save_link(link):
-    collection.insert_one({"link": link})
+def forward_link(update, context):
+    message = update.message
+    chat_id = message.chat_id
+    link = None
 
-# Define a function to send links to a channel
-def send_links(channel_id):
-    for link in collection.find():
-        bot.send_message(channel_id, link["link"])
+    # Check if the message contains a link
+    if message.entities and message.entities[0].type == 'url':
+        link = message.text
 
-# Define a function to check if the bot is a member of a channel and an admin
-def is_member_and_admin(channel_id):
-    user = bot.get_user(channel_id)
-    return user.is_member and user.is_admin
+    # Check if the bot is an admin in the channel
+    bot = context.bot
+    chat_member = bot.get_chat_member(CHANNEL_ID, bot.id)
 
-@bot.on_message
-def handle_message(message):
-    # Check if the message is a link
-    if message.text.startswith("https://"):
-        # Save the link
-        save_link(message.text)
-        # Check if the bot is a member of the channel and an admin
-        if is_member_and_admin(message.chat.id):
-            # Send the links to the channel
-            send_links(message.chat.id)
+    if link and chat_member.status == 'administrator':
+        bot.send_message(CHANNEL_ID, link)
 
-bot.run()
+    # Optional: Send a confirmation message to the user
+    bot.send_message(chat_id, 'Link forwarded successfully!')
+
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dispatcher = updater.dispatcher
+
+    # Register the message handler
+    message_handler = MessageHandler(Filters.text, forward_link)
+    dispatcher.add_handler(message_handler)
+
+    # Start the bot
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
