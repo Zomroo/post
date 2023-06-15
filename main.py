@@ -28,11 +28,11 @@ def handle_message(client, message):
 
     elif message.photo:
         # Get the photo from the message
-        photo = message.photo[-1]  # Get the last (largest) available photo
+        photo = message.photo
         
-        # Check if the photo has a caption containing a link
-        if message.caption and message.caption.startswith('http'):
-            link = message.caption
+        # Check if the message has a caption containing a link
+        if photo.caption and photo.caption.startswith('http'):
+            link = photo.caption
             
             # Create the button with the link URL
             button_confirm = InlineKeyboardButton(text="Confirm", callback_data="confirm")
@@ -42,7 +42,10 @@ def handle_message(client, message):
             # Send the confirmation message to the user
             confirm_msg = f"Are you sure you want to send this link?\n\n{link}"
             client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard)
-            client.send_photo(chat_id=message.chat.id, photo=photo.file_id, caption=link)
+            
+            # Send the photo along with the link
+
+            
 
 # Handler for button callbacks
 @app.on_callback_query()
@@ -76,7 +79,7 @@ def handle_button_click(client, callback_query):
             
             # Send the photo to the target channel
             channel_id = -1001424450330
-            client.send_photo(chat_id=channel_id, photo=message.photo[-1].file_id, caption=link, reply_markup=keyboard)
+            client.send_photo(chat_id=message.chat.id, photo=photo.file_id, caption=link, reply_markup=keyboard)
             
             # Delete the original message
             client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
