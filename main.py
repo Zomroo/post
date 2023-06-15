@@ -12,7 +12,7 @@ channel_id = -1001424450330
 
 # Define the filter to only handle messages with links
 @filters.regex(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
-def handle_links(client, message):
+def handle_links(client, message, update):
     link = message.text
     client.send_message(chat_id=channel_id, text=link)
 
