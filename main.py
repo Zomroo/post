@@ -23,7 +23,7 @@ def handle_message(client, message):
         
         # Send the confirmation message as a reply to the user's original message
         confirm_msg = f"Do you want to send this link?\n\nLink: {link}"
-        client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard, reply_to_message_id=message.message_id)
+        client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard, reply_to_message_id=message.id)
 
 
 # Handler for button callbacks
@@ -46,11 +46,11 @@ def handle_callback(client, callback_query):
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
         # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
     
     elif callback_query.data == "cancel":
         # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
 
 
 # Start the bot
