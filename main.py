@@ -7,16 +7,17 @@ bot_token = '5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-# Define the channel ID where you want to forward the links
+# Replace '-1001424450330' with your own channel ID
 channel_id = -1001424450330
 
-# Define the handler for incoming messages
-@app.on_message()
-def handle_message(client, message):
-    # Check if the message has a link
-    if message.entities and message.entities[0].type == "url":
-        # Forward the link to the channel
-        client.forward_messages(chat_id=channel_id, from_chat_id=message.chat.id, message_ids=message.message_id)
+# Define the filter to only handle messages with links
+@filters.regex(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+def handle_links(client, message):
+    link = message.text
+    client.send_message(chat_id=channel_id, text=link)
+
+# Register the filter and the corresponding handler function
+app.add_handler(handle_links)
 
 # Start the bot
 app.run()
