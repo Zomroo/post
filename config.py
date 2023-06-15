@@ -6,8 +6,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 # Define your API hash, API ID, and bot token here
-API_ID = 'YOUR_API_ID'
-API_HASH = 'YOUR_API_HASH'
+API_ID = '14091414'
+API_HASH = '1e26ebacf23466ed6144d29496aa5d5b'
 TOKEN = '5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo'
 
 # Create a Pyrogram client
