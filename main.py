@@ -29,7 +29,7 @@ def handle_link_message(client, message):
     
     # Send the confirmation message to the user
     confirm_msg = f"Are you sure you want to send this link?\n\n{link}"
-    client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard)
+    client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard, reply_to_message_id=message.id)
 
 
 def handle_photo_message(client, message):
@@ -48,7 +48,7 @@ def handle_photo_message(client, message):
 
 # Handler for button callbacks
 @app.on_callback_query()
-def handle_button_click(client, callback_query, **kwargs):
+def handle_button_click(client, callback_query):
     # Check the callback data
     if callback_query.data == "confirm":
         # Get the original message data
