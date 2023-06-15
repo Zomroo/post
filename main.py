@@ -16,33 +16,33 @@ def handle_message(client, message):
         # Check if the message contains a link
         if message.text.startswith('http'):
             link = message.text
-
+            
             # Create the button with the link URL
             button_confirm = InlineKeyboardButton(text="Confirm", callback_data="confirm")
             button_cancel = InlineKeyboardButton(text="Cancel", callback_data="cancel")
             keyboard = InlineKeyboardMarkup([[button_confirm, button_cancel]])
-
+            
             # Send the confirmation message to the user
             confirm_msg = f"Are you sure you want to send this link?\n\n{link}"
             client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard)
 
     elif message.photo:
         # Get the photo from the message
-        photo = message.photo
-
+        photo = message.photo[-1]  # Get the last (largest) available photo
+        
         # Check if the photo has a caption containing a link
-        if photo.caption and photo.caption.startswith('http'):
-            link = photo.caption
-
+        if message.caption and message.caption.startswith('http'):
+            link = message.caption
+            
             # Create the button with the link URL
             button_confirm = InlineKeyboardButton(text="Confirm", callback_data="confirm")
             button_cancel = InlineKeyboardButton(text="Cancel", callback_data="cancel")
             keyboard = InlineKeyboardMarkup([[button_confirm, button_cancel]])
-
+            
             # Send the confirmation message to the user
             confirm_msg = f"Are you sure you want to send this link?\n\n{link}"
             client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard)
-
+            client.send_photo(chat_id=message.chat.id, photo=photo.file_id, caption=link)
 
 # Handler for button callbacks
 @app.on_callback_query()
@@ -51,36 +51,36 @@ def handle_button_click(client, callback_query):
     if callback_query.data == "confirm":
         # Get the original message data
         message = callback_query.message
-
+        
         if message.text:
             link = message.text.split("\n\n")[1]
-
+            
             # Create the button with the link URL
             button = InlineKeyboardButton(text="Click here", url=link)
             keyboard = InlineKeyboardMarkup([[button]])
-
+            
             # Send the message to the target channel
             channel_id = -1001424450330
             caption = f"Link: {link}"
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
-
+            
             # Delete the original message
             client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
-
+        
         elif message.photo:
-            link = message.photo.caption
-
+            link = message.caption
+            
             # Create the button with the link URL
             button = InlineKeyboardButton(text="Click here", url=link)
             keyboard = InlineKeyboardMarkup([[button]])
-
+            
             # Send the photo to the target channel
             channel_id = -1001424450330
-            client.send_photo(chat_id=channel_id, photo=message.photo.file_id, caption=link, reply_markup=keyboard)
-
+            client.send_photo(chat_id=channel_id, photo=message.photo[-1].file_id, caption=link, reply_markup=keyboard)
+            
             # Delete the original message
             client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
-
+    
     elif callback_query.data == "cancel":
         # Delete the confirmation message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
