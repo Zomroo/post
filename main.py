@@ -18,8 +18,8 @@ def handle_message(client, message):
         
         # Ask for confirmation
         confirmation_message = f"Are you sure you want to send this link?\n\nLink: {link}"
-        confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.message_id}")
-        cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.message_id}")
+        confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
+        cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
         keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
         
         client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
