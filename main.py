@@ -4,13 +4,13 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 # Create a Pyrogram client
 api_id = 14091414
 api_hash = '1e26ebacf23466ed6144d29496aa5d5b'
-bot_token = '5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo'
+bot_token = '6182295264:AAEEilY-tEUOn3KzxT7CRNnukkKTOYrZFnQ'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 
 # Authorized users
-authorized_users = [5500572462]  # Replace with your authorized user IDs
+authorized_users = [5500572462, 5205602399]  # Replace with your authorized user IDs
 
 
 # Check if user is authorized
