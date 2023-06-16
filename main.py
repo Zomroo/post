@@ -65,7 +65,7 @@ def handle_callback(client, callback_query):
             # Send the link as a message to the target channel
             channel_id = -1001424450330
             caption = f"Link: {message.text if message.text.startswith('http') else message.caption}"
-            button = InlineKeyboardButton(text="Click here", url=caption)
+            button = InlineKeyboardButton(text="Click here", url=message.text if message.text.startswith('http') else message.caption)
             keyboard = InlineKeyboardMarkup([[button]])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
