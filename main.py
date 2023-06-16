@@ -57,7 +57,7 @@ def handle_callback(client, callback_query):
         if message.photo:
             # Copy the image and link to the target channel
             channel_id = -1001424450330
-            caption = f"Links:\n{message.caption}"
+            caption = f"Links:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             button1 = InlineKeyboardButton(text="Link 1", url=message.caption.split('\n')[0])
             button2 = InlineKeyboardButton(text="Link 2", url=message.caption.split('\n')[1])
             button3 = InlineKeyboardButton(text="Link 3", url=message.caption.split('\n')[2])
