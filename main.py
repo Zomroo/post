@@ -95,7 +95,7 @@ def handle_callback(client, callback_query):
     
     elif action == 'cancel':
         # Delete the confirmation message and the original message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.message_id, message_id])
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.id, message_id])
 
 # Start the bot
 app.run()
