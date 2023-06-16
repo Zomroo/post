@@ -10,7 +10,7 @@ app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 
 # Authorized users
-authorized_users = [5500572462, 5205602399]  # Replace with your authorized user IDs
+authorized_users = [5500572462, 5205602399, 1938491135]  # Replace with your authorized user IDs
 
 
 # Check if user is authorized
