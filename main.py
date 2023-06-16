@@ -13,43 +13,50 @@ app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 @app.on_message(filters.private)
 def handle_message(client, message):
     # Check if the message contains a link
-    if message.text.startswith('http'):
-        link = message.text
+    if message.text.startswith('http') or message.caption.startswith('http'):
+        link = message.text if message.text.startswith('http') else message.caption
         
-        # Create the button with the link URL
-        button_confirm = InlineKeyboardButton(text="Confirm", callback_data="confirm")
-        button_cancel = InlineKeyboardButton(text="Cancel", callback_data="cancel")
-        keyboard = InlineKeyboardMarkup([[button_confirm, button_cancel]])
+        # Ask for confirmation
+        confirmation_message = f"Are you sure you want to send this link?\n\nLink: {link}"
+        confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.message_id}")
+        cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.message_id}")
+        keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
         
-        # Send the confirmation message to the user
-        confirm_msg = f"Are you sure you want to send this link?\n\n{link}"
-        client.send_message(chat_id=message.chat.id, text=confirm_msg, reply_markup=keyboard)
-
-
-# Handler for button callbacks
-@app.on_callback_query()
-def handle_button_click(client, callback_query):
-    # Check the callback data
-    if callback_query.data == "confirm":
-        # Get the original message data
-        message = callback_query.message
-        link = message.text.split("\n\n")[1]
-        
-        # Create the button with the link URL
-        button = InlineKeyboardButton(text="Click here", url=link)
-        keyboard = InlineKeyboardMarkup([[button]])
-        
-        # Send the message to the target channel
-        channel_id = -1001424450330
-        caption = f"Link: {link}"
-        client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
-        
-        # Delete the original message
-        client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
+        client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
     
-    elif callback_query.data == "cancel":
+    # Delete the message if it doesn't contain a link
+    else:
+        client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
+
+
+# Handler for inline keyboard button callbacks
+@app.on_callback_query()
+def handle_callback(client, callback_query):
+    callback_data = callback_query.data.split('_')
+    action = callback_data[0]
+    message_id = int(callback_data[1])
+    
+    if action == 'confirm':
+        # Get the original message
+        message = client.get_messages(chat_id=callback_query.message.chat.id, message_ids=message_id)
+        
+        if message.photo:
+            # Copy the image and link to the target channel
+            channel_id = -1001424450330
+            caption = f"Link: {message.text if message.text.startswith('http') else message.caption}"
+            client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.message_id, caption=caption)
+        else:
+            # Send the link as a message to the target channel
+            channel_id = -1001424450330
+            caption = f"Link: {message.text if message.text.startswith('http') else message.caption}"
+            client.send_message(chat_id=channel_id, text=caption)
+        
         # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
+    
+    elif action == 'cancel':
+        # Delete the confirmation message and the original message
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.message_id, message_id])
 
 
 # Start the bot
