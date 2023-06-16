@@ -12,20 +12,34 @@ app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 # Handler for incoming messages
 @app.on_message(filters.private)
 def handle_message(client, message):
-    # Check if the message contains a link
-    if message.text.startswith('http') or message.caption.startswith('http'):
-        link = message.text if message.text.startswith('http') else message.caption
-        
-        # Ask for confirmation
-        confirmation_message = f"Are you sure you want to send this link?\n\nLink: {link}"
-        confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-        cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-        keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
-        
-        client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+    if message.text:
+        # Check if the message contains a link in text
+        if message.text.startswith('http'):
+            link = message.text
+
+            # Ask for confirmation
+            confirmation_message = f"Are you sure you want to send this link?\n\nLink: {link}"
+            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
+            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
+            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
+
+            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+    
+    if message.caption:
+        # Check if the message contains a link in caption
+        if message.caption.startswith('http'):
+            link = message.caption
+
+            # Ask for confirmation
+            confirmation_message = f"Are you sure you want to send this link?\n\nLink: {link}"
+            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
+            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
+            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
+
+            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
     
     # Delete the message if it doesn't contain a link
-    else:
+    if not (message.text or message.caption):
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
 
