@@ -13,32 +13,42 @@ app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 @app.on_message(filters.private)
 def handle_message(client, message):
     if message.text:
-        # Check if the message contains a link in text
-        if message.text.startswith('http'):
-            link = message.text
-
+        # Check if the message contains multiple links
+        links = message.text.strip().split("\n")
+        if len(links) > 0 and len(links) <= 3:
             # Ask for confirmation
-            confirmation_message = f"Are you sure you want to send this link?"
+            confirmation_message = "Are you sure you want to send these links?"
+            keyboard = InlineKeyboardMarkup()
+            
+            for link in links:
+                button = InlineKeyboardButton(text="Click here", url=link)
+                keyboard.add(button)
+            
             confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
             cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
-
+            keyboard.row(confirm_button, cancel_button)
+            
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
     
     if message.caption:
-        # Check if the message contains a link in caption
-        if message.caption.startswith('http'):
-            link = message.caption
-
+        # Check if the message contains multiple links in caption
+        links = message.caption.strip().split("\n")
+        if len(links) > 0 and len(links) <= 3:
             # Ask for confirmation
-            confirmation_message = f"Are you sure you want to send this link?"
+            confirmation_message = "Are you sure you want to send these links?"
+            keyboard = InlineKeyboardMarkup()
+            
+            for link in links:
+                button = InlineKeyboardButton(text="Click here", url=link)
+                keyboard.add(button)
+            
             confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
             cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
-
+            keyboard.row(confirm_button, cancel_button)
+            
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
     
-    # Delete the message if it doesn't contain a link
+    # Delete the message if it doesn't contain multiple links
     if not (message.text or message.caption):
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
@@ -53,20 +63,29 @@ def handle_callback(client, callback_query):
     if action == 'confirm':
         # Get the original message
         message = client.get_messages(chat_id=callback_query.message.chat.id, message_ids=message_id)
+        links = message.text.strip().split("\n") if message.text else message.caption.strip().split("\n")
         
         if message.photo:
-            # Copy the image and link to the target channel
+            # Copy the image and links to the target channel
             channel_id = -1001424450330
-            caption = f"Link: {message.caption}"
-            button = InlineKeyboardButton(text="Click here", url=message.caption)
-            keyboard = InlineKeyboardMarkup([[button]])
+            caption = "\n".join([f"Link {i+1}: {link}" for i, link in enumerate(links)])
+            keyboard = InlineKeyboardMarkup()
+            
+            for link in links:
+                button = InlineKeyboardButton(text="Click here", url=link)
+                keyboard.add(button)
+            
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
-            # Send the link as a message to the target channel
+            # Send the links as a message to the target channel
             channel_id = -1001424450330
-            caption = f"Link: {message.text if message.text.startswith('http') else message.caption}"
-            button = InlineKeyboardButton(text="Click here", url=message.text if message.text.startswith('http') else message.caption)
-            keyboard = InlineKeyboardMarkup([[button]])
+            caption = "\n".join([f"Link {i+1}: {link}" for i, link in enumerate(links)])
+            keyboard = InlineKeyboardMarkup()
+            
+            for link in links:
+                button = InlineKeyboardButton(text="Click here", url=link)
+                keyboard.add(button)
+            
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
         # Delete the confirmation message
