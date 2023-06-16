@@ -26,7 +26,7 @@ def handle_message(client, message):
     
     # Delete the message if it doesn't contain a link
     else:
-        client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
+        client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
 
 # Handler for inline keyboard button callbacks
@@ -44,7 +44,7 @@ def handle_callback(client, callback_query):
             # Copy the image and link to the target channel
             channel_id = -1001424450330
             caption = f"Link: {message.text if message.text.startswith('http') else message.caption}"
-            client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.message_id, caption=caption)
+            client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption)
         else:
             # Send the link as a message to the target channel
             channel_id = -1001424450330
@@ -52,11 +52,11 @@ def handle_callback(client, callback_query):
             client.send_message(chat_id=channel_id, text=caption)
         
         # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
     
     elif action == 'cancel':
         # Delete the confirmation message and the original message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.message_id, message_id])
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.id, message_id])
 
 
 # Start the bot
