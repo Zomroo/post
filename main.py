@@ -75,10 +75,11 @@ def handle_callback(client, callback_query):
             # Copy the image and link to the target channel
             channel_id = -1001959451716
             caption = f"Links:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            button1 = InlineKeyboardButton(text="Link 1", url=message.caption.split('\n')[0])
-            button2 = InlineKeyboardButton(text="Link 2", url=message.caption.split('\n')[1])
-            button3 = InlineKeyboardButton(text="Link 3", url=message.caption.split('\n')[2])
-            keyboard = InlineKeyboardMarkup([[button1], [button2], [button3]])
+            caption_links = message.caption.split('\n')
+            buttons = []
+            for i in range(min(3, len(caption_links))):
+                buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
+            keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
