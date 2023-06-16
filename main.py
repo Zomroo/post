@@ -13,34 +13,60 @@ app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 @app.on_message(filters.private)
 def handle_message(client, message):
     if message.text:
-        # Check if the message contains a link in text
-        if message.text.startswith('http'):
-            link = message.text
-
-            # Ask for confirmation
-            confirmation_message = f"Are you sure you want to send this link?\n\nLink: {link}"
-            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
-
-            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+        # Extract links from the message text
+        links = extract_links(message.text)
+        
+        if len(links) > 0:
+            # Limit the number of links to 3
+            links = links[:3]
+            
+            # Create link buttons
+            buttons = []
+            for link in links:
+                button = InlineKeyboardButton(text=link, url=link)
+                buttons.append([button])
+            
+            # Create keyboard markup
+            keyboard = InlineKeyboardMarkup(buttons)
+            
+            # Send the links as a message to the target channel
+            channel_id = -1001424450330
+            client.send_message(chat_id=channel_id, text="Links:", reply_markup=keyboard)
     
     if message.caption:
-        # Check if the message contains a link in caption
-        if message.caption.startswith('http'):
-            link = message.caption
-
-            # Ask for confirmation
-            confirmation_message = f"Are you sure you want to send this link?\n\nLink: {link}"
-            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
-
-            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+        # Extract links from the message caption
+        links = extract_links(message.caption)
+        
+        if len(links) > 0:
+            # Limit the number of links to 3
+            links = links[:3]
+            
+            # Create link buttons
+            buttons = []
+            for link in links:
+                button = InlineKeyboardButton(text=link, url=link)
+                buttons.append([button])
+            
+            # Create keyboard markup
+            keyboard = InlineKeyboardMarkup(buttons)
+            
+            # Send the links as a message to the target channel
+            channel_id = -1001424450330
+            client.send_message(chat_id=channel_id, text="Links:", reply_markup=keyboard)
     
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
-        client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
+        client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
+
+
+# Helper function to extract links from a string
+def extract_links(text):
+    links = []
+    words = text.split()
+    for word in words:
+        if word.startswith('http') or word.startswith('https'):
+            links.append(word)
+    return links
 
 
 # Handler for inline keyboard button callbacks
@@ -66,11 +92,12 @@ def handle_callback(client, callback_query):
             client.send_message(chat_id=channel_id, text=caption)
         
         # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
     
     elif action == 'cancel':
         # Delete the confirmation message and the original message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.message_id, message_id])
+
 
 # Start the bot
 app.run()
