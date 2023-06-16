@@ -9,9 +9,22 @@ bot_token = '5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo'
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 
+# Authorized users
+authorized_users = [123456789, 987654321]  # Replace with your authorized user IDs
+
+
+# Check if user is authorized
+def is_authorized(user_id):
+    return user_id in authorized_users
+
+
 # Handler for incoming messages
 @app.on_message(filters.private)
 def handle_message(client, message):
+    # Check if user is authorized
+    if not is_authorized(message.from_user.id):
+        return  # Ignore non-authorized users
+
     if message.text:
         # Check if the message contains a link in text
         if message.text.startswith('http'):
@@ -46,6 +59,10 @@ def handle_message(client, message):
 # Handler for inline keyboard button callbacks
 @app.on_callback_query()
 def handle_callback(client, callback_query):
+    # Check if user is authorized
+    if not is_authorized(callback_query.from_user.id):
+        return  # Ignore non-authorized users
+
     callback_data = callback_query.data.split('_')
     action = callback_data[0]
     message_id = int(callback_data[1])
