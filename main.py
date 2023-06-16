@@ -73,7 +73,7 @@ def handle_callback(client, callback_query):
         
         if message.photo:
             # Copy the image and link to the target channel
-            channel_id = -1001424450330
+            channel_id = -1001959451716
             caption = f"Links:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             button1 = InlineKeyboardButton(text="Link 1", url=message.caption.split('\n')[0])
             button2 = InlineKeyboardButton(text="Link 2", url=message.caption.split('\n')[1])
@@ -82,7 +82,7 @@ def handle_callback(client, callback_query):
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
-            channel_id = -1001424450330
+            channel_id = -1001959451716
             links = message.text if message.text.startswith('http') else message.caption
             links = links.split('\n')[:3]  # Limit to a maximum of 3 links
             caption = f"Links:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
