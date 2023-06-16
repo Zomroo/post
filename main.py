@@ -8,47 +8,38 @@ bot_token = '5752952621:AAGO61IiffzN23YuXyv71fbDztA_ubGM6qo'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-
 # Handler for incoming messages
 @app.on_message(filters.private)
 def handle_message(client, message):
     if message.text:
-        # Check if the message contains multiple links
-        links = message.text.strip().split("\n")
-        if len(links) > 0 and len(links) <= 3:
+        # Check if the message contains links in text
+        links = message.text.strip().split("\n")[:3]  # Get up to 3 links as a list
+        
+        if links:
             # Ask for confirmation
-            confirmation_message = "Are you sure you want to send these links?"
-            keyboard = InlineKeyboardMarkup()
-            
-            for link in links:
-                button = InlineKeyboardButton(text="Click here", url=link)
-                keyboard.add(button)
-            
-            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard.row(confirm_button, cancel_button)
+            confirmation_message = f"Are you sure you want to send these links?"
+            keyboard_buttons = [
+                InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)
+            ]
+            keyboard = InlineKeyboardMarkup([keyboard_buttons])
             
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
     
     if message.caption:
-        # Check if the message contains multiple links in caption
-        links = message.caption.strip().split("\n")
-        if len(links) > 0 and len(links) <= 3:
+        # Check if the message contains links in caption
+        links = message.caption.strip().split("\n")[:3]  # Get up to 3 links as a list
+        
+        if links:
             # Ask for confirmation
-            confirmation_message = "Are you sure you want to send these links?"
-            keyboard = InlineKeyboardMarkup()
-            
-            for link in links:
-                button = InlineKeyboardButton(text="Click here", url=link)
-                keyboard.add(button)
-            
-            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard.row(confirm_button, cancel_button)
+            confirmation_message = f"Are you sure you want to send these links?"
+            keyboard_buttons = [
+                InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)
+            ]
+            keyboard = InlineKeyboardMarkup([keyboard_buttons])
             
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
     
-    # Delete the message if it doesn't contain multiple links
+    # Delete the message if it doesn't contain any links
     if not (message.text or message.caption):
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
@@ -63,29 +54,24 @@ def handle_callback(client, callback_query):
     if action == 'confirm':
         # Get the original message
         message = client.get_messages(chat_id=callback_query.message.chat.id, message_ids=message_id)
-        links = message.text.strip().split("\n") if message.text else message.caption.strip().split("\n")
         
         if message.photo:
             # Copy the image and links to the target channel
             channel_id = -1001424450330
-            caption = "\n".join([f"Link {i+1}: {link}" for i, link in enumerate(links)])
-            keyboard = InlineKeyboardMarkup()
-            
-            for link in links:
-                button = InlineKeyboardButton(text="Click here", url=link)
-                keyboard.add(button)
-            
+            caption = f"Links:\n{message.caption}"
+            keyboard_buttons = [
+                InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(message.caption.strip().split("\n"))
+            ]
+            keyboard = InlineKeyboardMarkup([keyboard_buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
-            caption = "\n".join([f"Link {i+1}: {link}" for i, link in enumerate(links)])
-            keyboard = InlineKeyboardMarkup()
-            
-            for link in links:
-                button = InlineKeyboardButton(text="Click here", url=link)
-                keyboard.add(button)
-            
+            caption = f"Links:\n{message.text if message.text else message.caption}"
+            keyboard_buttons = [
+                InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(message.text.strip().split("\n"))
+            ]
+            keyboard = InlineKeyboardMarkup([keyboard_buttons])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
         # Delete the confirmation message
