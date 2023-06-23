@@ -74,6 +74,8 @@ def handle_callback(client, callback_query):
         else:
             # Send the links as a message to the target channel
             channel_id = -1001959451716
+            links = []
+            links = message.caption.split('\n')
             links = links[:3]  # Limit to a maximum of 3 links
             caption = f"Title - {title}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
