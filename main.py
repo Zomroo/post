@@ -37,7 +37,7 @@ def handle_message(client, message):
             links = [message.text]
         else:
             links = [link for link in lines[1:] if link.strip().startswith('http')]
-        
+
         # Ask for confirmation
         confirmation_message = f"Are you sure you want to send this link?"
         confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
