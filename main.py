@@ -75,7 +75,7 @@ def handle_callback(client, callback_query):
         if message.photo:
             # Copy the image and link to the target channel
             channel_id = -1001424450330
-            caption = f"Title - {message.caption.split('\n')[0]}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            caption = f"Title - {message.caption.split('\n')[0]}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl")
             caption_links = message.caption.split('\n')[1:]
             buttons = []
             for i in range(min(3, len(caption_links))):
