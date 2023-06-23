@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 # Create a Pyrogram client
 api_id = 14091414
 api_hash = '1e26ebacf23466ed6144d29496aa5d5b'
-bot_token = '6182295264:AAEEilY-tEUOn3KzxT7CRNnukkKTOYrZFnQ'
+bot_token = '5615528335:AAFrJcGIItkdEvMZREvOi3LgLKeNHu9Md2c'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
@@ -73,7 +73,7 @@ def handle_callback(client, callback_query):
         
         if message.photo:
             # Copy the image and link to the target channel
-            channel_id = -1001424450330
+            channel_id = -1001959451716
             caption = f"**Title** : `Leaks` \n\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl\n\n\n**Click On The Button Below To Get The Videos**"
             caption_links = message.caption.split('\n')
             buttons = []
@@ -83,7 +83,7 @@ def handle_callback(client, callback_query):
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
-            channel_id = -1001424450330
+            channel_id = -1001959451716
             links = message.text if message.text.startswith('http') else message.caption
             links = links.split('\n')[:3]  # Limit to a maximum of 3 links
             caption = f"**Title** : `Leaks` \n\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl\n\n**Click On The Button Below To Get The Videos**"
