@@ -85,7 +85,6 @@ def handle_callback(client, callback_query):
             # Copy the image and link to the target channel
             channel_id = -1001424450330
             caption = f"Title - {custom_caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            caption_links = message.caption.split('\n')
             buttons = []
             for i in range(min(3, len(caption_links))):
                 buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
@@ -95,7 +94,6 @@ def handle_callback(client, callback_query):
             # Send the links as a message to the target channel
             channel_id = -1001424450330
             links = message.text if message.text.startswith('http') else message.caption
-            links = links.split('\n')[:3]  # Limit to a maximum of 3 links
             caption = f"Title - {custom_caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
