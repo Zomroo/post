@@ -45,11 +45,12 @@ def handle_message(client, message):
         keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
         if message.photo:
-            message_data[message.id] = {"title": title, "links": links, "photo": message.photo.file_id}
-            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+            client.send_photo(chat_id=message.chat.id, photo=message.photo.file_id, caption=confirmation_message, reply_markup=keyboard)
         else:
-            message_data[message.id] = {"title": title, "links": links}
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+
+        # Store the title, links, and photo in the message data dictionary
+        message_data[message.id] = {"title": title, "links": links, "photo": message.photo}
 
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
@@ -80,7 +81,7 @@ def handle_callback(client, callback_query):
                 for i, link in enumerate(message_data_dict['links'][:3]):
                     buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=link))
                 keyboard = InlineKeyboardMarkup([buttons])
-                client.send_photo(chat_id=channel_id, photo=message_data_dict['photo'], caption=caption, reply_markup=keyboard)
+                client.copy_message(chat_id=channel_id, from_chat_id=callback_query.message.chat.id, message_id=message_id, caption=caption, reply_markup=keyboard)
             else:
                 # Send the links as a message to the target channel
                 channel_id = -1001424450330
