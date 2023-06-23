@@ -77,6 +77,8 @@ def handle_callback(client, callback_query):
             # Copy the image and link to the target channel
             channel_id = -1001424450330
             caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            lines = message.caption.strip().split('\n')
+            links = lines[2:][:3] if len(lines) >= 3 and lines[2].startswith('http') else []
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
@@ -84,6 +86,8 @@ def handle_callback(client, callback_query):
             # Send the links as a message to the target channel
             channel_id = -1001424450330
             caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            lines = message.caption.strip().split('\n')
+            links = lines[2:][:3] if len(lines) >= 3 and lines[2].startswith('http') else []
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
