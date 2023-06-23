@@ -88,9 +88,7 @@ def handle_callback(client, callback_query):
             links = links[:3]  # Limit to a maximum of 3 links
             caption = re.sub(r"https?://[^\s]+", "", custom_caption).strip()  # Remove the link from the caption
             caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            buttons = []
-            for i in range(min(3, len(caption_links))):
-                buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
