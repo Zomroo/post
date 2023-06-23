@@ -103,8 +103,7 @@ def handle_callback(client, callback_query):
                 for i in range(min(3, len(caption_links))):
                     buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
                 keyboard = InlineKeyboardMarkup([buttons])
-                client.send_photo(chat_id=channel_id, photo=message_data_dict['photo'], caption=caption, reply_markup=keyboard)
-
+                client.send_photo(chat_id=channel_id, photo=message_data_dict['photo'].file_id, caption=caption, reply_markup=keyboard)
             else:
                 # Send the links as a message to the target channel
                 channel_id = -1001424450330
