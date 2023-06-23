@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 # Create a Pyrogram client
 api_id = 14091414
 api_hash = '1e26ebacf23466ed6144d29496aa5d5b'
-bot_token = '6182295264:AAEEilY-tEUOn3KzxT7CRNnukkKTOYrZFnQ'
+bot_token = '5615528335:AAFrJcGIItkdEvMZREvOi3LgLKeNHu9Md2c'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
