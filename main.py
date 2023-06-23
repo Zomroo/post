@@ -74,13 +74,13 @@ def handle_callback(client, callback_query):
         else:
             # Send the links as a message to the target channel
             channel_id = -1001959451716
-            links = []
-            links = message.caption.split('\n')
-            links = links[:3]  # Limit to a maximum of 3 links
-            caption = f"Title - {title}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
-            keyboard = InlineKeyboardMarkup([buttons])
-            client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
+            if message.caption is not None:
+                links = message.caption.split('\n')
+                links = links[:3]  # Limit to a maximum of 3 links
+                caption = f"Title - {title}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+                buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
+                keyboard = InlineKeyboardMarkup([buttons])
+                client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
         # Delete the confirmation message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
@@ -88,6 +88,5 @@ def handle_callback(client, callback_query):
     elif action == 'cancel':
         # Delete the confirmation message and the original message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.id, message_id])
-
 # Start the bot
 app.run()
