@@ -38,21 +38,21 @@ def handle_message(client, message):
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
     
-     if message.caption:
-         # Check if the message contains a link in caption
-         if message.caption.startswith('http'):
-             link = message.caption
+    if message.caption:
+        # Check if the message contains a link in caption
+        if message.caption.startswith('http'):
+            link = message.caption
 
-             # Ask for confirmation
-             confirmation_message = f"Are you sure you want to send this link?"
-             confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-             cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-             keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
+            # Ask for confirmation
+            confirmation_message = f"Are you sure you want to send this link?"
+            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
+            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
+            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
-             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
-         else:
-             # Custom caption without a link, send the message as is
-             client.send_message(chat_id=message.chat.id, text=message.caption)
+            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+        else:
+            # Custom caption without a link, send the message as is
+            client.send_message(chat_id=message.chat.id, text=message.caption)
 
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
@@ -75,39 +75,39 @@ def handle_callback(client, callback_query):
         message = client.get_messages(chat_id=callback_query.message.chat.id, message_ids=message_id)
         
         if message.photo:
-             # Copy the image and link to the target channel
+            # Copy the image and link to the target channel
             channel_id = -1001424450330
-    
+
             if message.caption:
                 # Use the custom caption as the title
                 title = message.caption
             else:
                 # No custom caption, use a default title
                 title = "Untitled"
-        
+
             caption = f"{title}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-    
+
             # Split the caption by lines to extract the links and buttons
             caption_lines = caption.split('\n')
             links = caption_lines[2:]  # Get the links portion
-    
+
             # Create buttons for each link
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
-    
+
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
             links = message.text if message.text.startswith('http') else message.caption
-    
+
             if message.caption:
                 # Use the custom caption as the title
                 title = message.caption
             else:
                 # No custom caption, use a default title
                 title = "Untitled"
-    
+
             links = links.split('\n')[:3]  # Limit to a maximum of 3 links
             caption = f"{title}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
