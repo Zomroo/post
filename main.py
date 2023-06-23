@@ -40,8 +40,7 @@ def handle_message(client, message):
         keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
         client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard, disable_web_page_preview=True,
-                            reply_to_message_id=message.id,
-                            parse_mode='markdown', disable_notification=True)
+                            reply_to_message_id=message.id, disable_notification=True)
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
     elif message.caption:
@@ -59,8 +58,7 @@ def handle_message(client, message):
         keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
         client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard, disable_web_page_preview=True,
-                            reply_to_message_id=message.id,
-                            parse_mode='markdown', disable_notification=True)
+                            reply_to_message_id=message.id, disable_notification=True)
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
 
