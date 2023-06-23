@@ -50,7 +50,7 @@ def handle_message(client, message):
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
 
         # Store the title and link in the message data dictionary
-        message_data[message.message_id] = {"title": title, "link": link}
+        message_data[message.id] = {"title": title, "link": link}
     
     if message.caption:
         lines = message.caption.split('\n')
@@ -70,7 +70,7 @@ def handle_message(client, message):
         client.send_photo(chat_id=message.chat.id, photo=message.photo.file_id, caption=confirmation_message, reply_markup=keyboard)
 
         # Store the title and link in the message data dictionary
-        message_data[message.message_id] = {"title": title, "link": link}
+        message_data[message.id] = {"title": title, "link": link}
 
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
