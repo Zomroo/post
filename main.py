@@ -25,27 +25,43 @@ def handle_message(client, message):
     if not is_authorized(message.from_user.id):
         return  # Ignore non-authorized users
 
-    if message.entities and message.entities[0].type == 'url':
-        # Check if the message contains a link
-        link_entity = message.entities[0]
-        link = message.text[link_entity.offset:link_entity.offset + link_entity.length]
-
+    if message.text:
         # Extract custom caption and links
         lines = message.text.split('\n')
         caption = lines[0]
-        links = lines[1:]
+        links = [line for line in lines if line.startswith('http')]
 
-        # Ask for confirmation
-        confirmation_message = f"Are you sure you want to send this link?"
-        confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-        cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-        keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
+        # Check if links are present
+        if links:
+            # Ask for confirmation
+            confirmation_message = f"Are you sure you want to send this link?"
+            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
+            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
+            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
-        client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+        else:
+            # Delete the message if it doesn't contain a link
+            client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
-    # Delete the message if it doesn't contain a link
-    if not (message.entities and message.entities[0].type == 'url'):
-        client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
+    if message.caption:
+        # Extract custom caption and links
+        lines = message.caption.split('\n')
+        caption = lines[0]
+        links = [line for line in lines if line.startswith('http')]
+
+        # Check if links are present
+        if links:
+            # Ask for confirmation
+            confirmation_message = f"Are you sure you want to send this link?"
+            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
+            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
+            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
+
+            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+        else:
+            # Delete the message if it doesn't contain a link
+            client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
 
 # Handler for inline keyboard button callbacks
@@ -67,15 +83,14 @@ def handle_callback(client, callback_query):
             # Copy the image and link to the target channel
             channel_id = -1001424450330
             caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            buttons = [InlineKeyboardButton(text=f"Link {i + 1}", url=link) for i, link in enumerate(links)]
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
-            client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id,
-                                caption=caption, reply_markup=keyboard)
+            client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
             caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl\n{caption}"
-            buttons = [InlineKeyboardButton(text=f"Link {i + 1}", url=link) for i, link in enumerate(links)]
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
 
