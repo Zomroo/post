@@ -30,7 +30,7 @@ async def handle_message(client, message):
     )
 
     # Store the message ID for later reference
-    app.confirmed_messages[message.message_id] = confirmation_message.message_id
+    app.confirmed_messages[message.id] = confirmation_message.id
 
 # Handler for callback queries
 @app.on_callback_query()
