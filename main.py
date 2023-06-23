@@ -1,4 +1,5 @@
-from pyrogram import Client, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Create a Pyrogram client
 api_id = 14091414
