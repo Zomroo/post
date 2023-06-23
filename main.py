@@ -86,18 +86,25 @@ def handle_callback(client, callback_query):
             channel_id = -1001424450330
             links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
             links = links[:3]  # Limit to a maximum of 3 links
-            caption = custom_caption.strip()  # Use the custom caption as the title
+            caption = re.sub(r"https?://[^\s]+", "", custom_caption).strip()  # Remove the link from the caption
             caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
-            # Send the custom caption as a message to the target channel
+            # Send the caption (without the link) as a message to the target channel
             channel_id = -1001424450330
-            caption = custom_caption.strip()  # Use the custom caption as the title
+            links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
+            links = links[:3]  # Limit to a maximum of 3 links
+            caption = re.sub(r"https?://[^\s]+", "", custom_caption).strip()  # Remove the link from the caption
             caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            client.send_message(chat_id=channel_id, text=caption)
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
+            keyboard = InlineKeyboardMarkup([buttons])
+            client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
+        # Reset the custom caption
+        custom_caption = ""
+
         # Delete the confirmation message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
     
