@@ -27,9 +27,8 @@ def handle_message(client, message):
 
     if message.text:
         lines = message.text.split('\n')
-        title = lines[0] if lines else ""  # Get the title from the first line
-        # Check if the message contains a link in text
-        if any(line.startswith('http') for line in lines):
+        if lines[0].startswith('http'):
+            title = lines[0] if lines else ""  # Get the title from the first line
             link = message.text
 
             # Ask for confirmation
@@ -39,12 +38,24 @@ def handle_message(client, message):
             keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+        else:
+            title = message.text
+            links = [line for line in lines if line.startswith('http')]
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links[:3])]
+            keyboard = InlineKeyboardMarkup([buttons])
+
+            # Ask for confirmation
+            confirmation_message = f"Are you sure you want to send these links?\nTitle: {title}"
+            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
+            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
+            keyboard.add_row(confirm_button, cancel_button)
+
+            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
     
     if message.caption:
         lines = message.caption.split('\n')
-        title = lines[0] if lines else ""  # Get the title from the first line
-        # Check if the message contains a link in caption
-        if any(line.startswith('http') for line in lines):
+        if lines[0].startswith('http'):
+            title = lines[0] if lines else ""  # Get the title from the first line
             link = message.caption
 
             # Ask for confirmation
@@ -54,7 +65,20 @@ def handle_message(client, message):
             keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
-    
+        else:
+            title = message.caption
+            links = [line for line in lines if line.startswith('http')]
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links[:3])]
+            keyboard = InlineKeyboardMarkup([buttons])
+
+            # Ask for confirmation
+            confirmation_message = f"Are you sure you want to send these links?\nTitle: {title}"
+            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
+            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
+            keyboard.add_row(confirm_button, cancel_button)
+
+            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
@@ -89,7 +113,8 @@ def handle_callback(client, callback_query):
             # Send the links as a message to the target channel
             channel_id = -1001424450330
             links = message.text if message.text.startswith('http') else message.caption
-            links = links.split('\n')[:3]  # Limit to a maximum of 3 links
+            if links:
+                links = links.split('\n')[:3]  # Limit to a maximum of 3 links
             caption = f"Title: {message.text}\nLinks:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
