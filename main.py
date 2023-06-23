@@ -81,8 +81,8 @@ def handle_callback(client, callback_query):
                 links = links[:3]  # Limit to a maximum of 3 links
             caption = f"Title - {original_message.text}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
-            keyboard = InlineKeyboardMarkup([buttons])
-            client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
+            reply_markup = InlineKeyboardMarkup(buttons)
+            client.send_message(chat_id=channel_id, text=caption, reply_markup=reply_markup)
 
         # Delete the confirmation message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
