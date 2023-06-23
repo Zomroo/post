@@ -84,8 +84,10 @@ def handle_callback(client, callback_query):
         if message.photo:
             # Copy the image and link to the target channel
             channel_id = -1001424450330
-            caption_links = re.findall(r"(?P<url>https?://[^\s]+)", message.caption)
-            caption = f"Title - {custom_caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
+            links = links[:3]  # Limit to a maximum of 3 links
+            caption = re.sub(r"https?://[^\s]+", "", custom_caption).strip()  # Remove the link from the caption
+            caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = []
             for i in range(min(3, len(caption_links))):
                 buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
