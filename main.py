@@ -41,7 +41,7 @@ async def handle_callback_query(client, callback_query):
     # Check if the callback is for confirming the message
     if data == "confirm":
         # Get the original message ID
-        original_message_id = app.confirmed_messages.get(callback_query.message.reply_to_message.id)
+        original_message_id = app.confirmed_messages.get(callback_query.message.reply_to_message.message_id)
 
         # Delete the confirmation message
         await callback_query.message.delete()
@@ -77,7 +77,7 @@ async def handle_callback_query(client, callback_query):
                     "-1001424450330",
                     photo.file_id,
                     caption=caption,
-                    reply_to_message_id=copied_message.id,
+                    reply_to_message_id=copied_message.message_id,
                 )
 
     # Check if the callback is for canceling the message
