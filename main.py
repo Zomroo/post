@@ -82,20 +82,24 @@ def handle_callback(client, callback_query):
         global custom_caption  # Access the global variable
 
         if message.photo:
-            # Copy the image and create buttons without the link in the caption
+            # Copy the image and link to the target channel
             channel_id = -1001424450330
             caption = custom_caption.strip()  # Use the custom caption as the title
             caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(message.reply_markup.inline_keyboard[0])]
-            keyboard = InlineKeyboardMarkup([buttons])
+            buttons = []
+            for i, link in enumerate(links):
+                buttons.append([InlineKeyboardButton(text=f"Link {i+1}", url=link)])
+            keyboard = InlineKeyboardMarkup(buttons)
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
-            # Send the caption (without the link) as a message to the target channel with buttons
+            # Send the caption (without the link) as a message to the target channel
             channel_id = -1001424450330
             caption = custom_caption.strip()  # Use the custom caption as the title
             caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(message.reply_markup.inline_keyboard[0])]
-            keyboard = InlineKeyboardMarkup([buttons])
+            buttons = []
+            for i, link in enumerate(links):
+                buttons.append([InlineKeyboardButton(text=f"Link {i+1}", url=link)])
+            keyboard = InlineKeyboardMarkup(buttons)
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
         # Delete the confirmation message
