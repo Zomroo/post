@@ -83,16 +83,16 @@ def handle_callback(client, callback_query):
             caption_links = message.caption.split('\n') if message.caption else []
             buttons = []
             for i in range(min(3, len(caption_links))):
-                buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
-            keyboard = InlineKeyboardMarkup([buttons])
+                buttons.append([InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i])])
+            keyboard = InlineKeyboardMarkup(buttons)
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=f"Title: {title}\nLinks:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl", reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
             links = message.text if message.text and message.text.startswith('http') else message.caption
             links = links.split('\n')[:3] if links else []  # Limit to a maximum of 3 links
-            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
-            keyboard = InlineKeyboardMarkup([buttons])
+            buttons = [[InlineKeyboardButton(text=f"Link {i+1}", url=link)] for i, link in enumerate(links)]
+            keyboard = InlineKeyboardMarkup(buttons)
             client.send_message(chat_id=channel_id, text=f"Title: {title}\nLinks:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl", reply_markup=keyboard)
 
         # Delete the confirmation message
