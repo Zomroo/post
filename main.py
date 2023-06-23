@@ -30,13 +30,15 @@ def handle_message(client, message):
         
         # Check if the message contains a link in text
         if any(line.startswith('http') for line in lines):
-            link = next((line for line in lines if line.startswith('http')), "")
+            links = [line for line in lines if line.startswith('http')]
             
             # Ask for confirmation
             confirmation_message = f"Are you sure you want to send this link?"
-            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
+            buttons = [
+                [InlineKeyboardButton(text=f"Link {i+1}", url=link)]
+                for i, link in enumerate(links[:3])  # Limit to a maximum of 3 links
+            ]
+            keyboard = InlineKeyboardMarkup(buttons)
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
 
@@ -46,13 +48,15 @@ def handle_message(client, message):
         
         # Check if the message contains a link in caption
         if any(line.startswith('http') for line in lines):
-            link = next((line for line in lines if line.startswith('http')), "")
+            links = [line for line in lines if line.startswith('http')]
             
             # Ask for confirmation
             confirmation_message = f"Are you sure you want to send this link?"
-            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
+            buttons = [
+                [InlineKeyboardButton(text=f"Link {i+1}", url=link)]
+                for i, link in enumerate(links[:3])  # Limit to a maximum of 3 links
+            ]
+            keyboard = InlineKeyboardMarkup(buttons)
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
 
@@ -81,9 +85,10 @@ def handle_callback(client, callback_query):
             # Copy the image and link to the target channel
             channel_id = -1001424450330
             caption_links = message.caption.split('\n') if message.caption else []
-            buttons = []
-            for i in range(min(3, len(caption_links))):
-                buttons.append([InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i])])
+            buttons = [
+                [InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i])]
+                for i in range(min(3, len(caption_links)))  # Limit to a maximum of 3 links
+            ]
             keyboard = InlineKeyboardMarkup(buttons)
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=f"Title: {title}\nLinks:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl", reply_markup=keyboard)
         else:
@@ -91,7 +96,10 @@ def handle_callback(client, callback_query):
             channel_id = -1001424450330
             links = message.text if message.text and message.text.startswith('http') else message.caption
             links = links.split('\n')[:3] if links else []  # Limit to a maximum of 3 links
-            buttons = [[InlineKeyboardButton(text=f"Link {i+1}", url=link)] for i, link in enumerate(links)]
+            buttons = [
+                [InlineKeyboardButton(text=f"Link {i+1}", url=link)]
+                for i, link in enumerate(links)
+            ]
             keyboard = InlineKeyboardMarkup(buttons)
             client.send_message(chat_id=channel_id, text=f"Title: {title}\nLinks:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl", reply_markup=keyboard)
 
