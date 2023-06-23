@@ -87,7 +87,7 @@ def handle_callback(client, callback_query):
         else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
-            caption = f"Title: {title}\nLinks:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            caption = f"Title: {message.caption}\nLinks:\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i + 1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
