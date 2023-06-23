@@ -46,8 +46,8 @@ def handle_message(client, message):
     
     # Create the confirmation message
     confirm_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Confirm", callback_data=f"confirm_{message.message_id}"),
-         InlineKeyboardButton("Cancel", callback_data=f"cancel_{message.message_id}")]
+        [InlineKeyboardButton("Confirm", callback_data=f"confirm_{message.id}"),
+         InlineKeyboardButton("Cancel", callback_data=f"cancel_{message.id}")]
     ])
     confirm_message = f"Title: {title}\n\nLinks:\n" + "\n".join(links)
     
