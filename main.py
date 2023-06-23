@@ -65,7 +65,7 @@ async def handle_callback_query(client, callback_query):
             copied_message = await app.copy_message(
                 "-1001424450330",
                 callback_query.message.chat.id,
-                original_message.message_id,
+                original_message_id or callback_query.message.reply_to_message.message_id,
                 caption=caption,
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
