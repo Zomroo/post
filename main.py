@@ -63,7 +63,7 @@ def handle_callback(client, callback_query):
         
         if message.photo:
             # Copy the image and link to the target channel
-            channel_id = -1001959451716
+            channel_id = -1001424450330
             caption = f"Title - {message.caption}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             caption_links = message.caption.split('\n')
             buttons = []
@@ -73,7 +73,7 @@ def handle_callback(client, callback_query):
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
-            channel_id = -1001959451716
+            channel_id = -1001424450330
             if message.caption is not None:
                 links = message.caption.split('\n')
                 links = links[:3]  # Limit to a maximum of 3 links
