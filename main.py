@@ -40,7 +40,7 @@ def handle_message(client, message):
             keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
-    
+
     # Delete the message if it doesn't contain a title and links
     if not (message.text and '\n' in message.text):
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
@@ -56,37 +56,41 @@ def handle_callback(client, callback_query):
     callback_data = callback_query.data.split('_')
     action = callback_data[0]
     message_id = int(callback_data[1])
-    
+
     if action == 'confirm':
         # Get the original message
-        message = client.get_messages(chat_id=callback_query.message.chat.id, message_ids=message_id)
-        
-        if message.photo:
+        original_message = client.get_messages(chat_id=callback_query.message.chat.id, message_ids=message_id)
+
+        if original_message.photo:
             # Copy the image and link to the target channel
             channel_id = -1001424450330
-            caption = f"Title - {message.caption}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            caption_links = message.caption.split('\n')
+            caption = f"Title - {original_message.caption}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            caption_links = original_message.caption.split('\n')
             buttons = []
             for i in range(min(3, len(caption_links))):
                 buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
             keyboard = InlineKeyboardMarkup([buttons])
-            client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
+            client.copy_message(chat_id=channel_id, from_chat_id=callback_query.message.chat.id,
+                                message_id=original_message.message_id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
-            if message.caption is not None:
-                links = message.caption.split('\n')
+            links = []
+            if original_message.caption:
+                links = original_message.caption.split('\n')
                 links = links[:3]  # Limit to a maximum of 3 links
-                caption = f"Title - {title}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-                buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
-                keyboard = InlineKeyboardMarkup([buttons])
-                client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
-        
+            caption = f"Title - {original_message.text}\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
+            keyboard = InlineKeyboardMarkup([buttons])
+            client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
+
         # Delete the confirmation message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
-    
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
+
     elif action == 'cancel':
         # Delete the confirmation message and the original message
-        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.id, message_id])
+        client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.message_id, message_id])
+
+
 # Start the bot
 app.run()
