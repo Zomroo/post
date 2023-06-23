@@ -84,19 +84,20 @@ def handle_callback(client, callback_query):
         if message.photo:
             # Copy the image and link to the target channel
             channel_id = -1001424450330
-            caption = f"Title - {custom_caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             caption_links = re.findall(r"(?P<url>https?://[^\s]+)", message.caption)
+            caption = f"Title - {custom_caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = []
             for i in range(min(3, len(caption_links))):
                 buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
-            # Send the links as a message to the target channel
+            # Send the caption (without the link) as a message to the target channel
             channel_id = -1001424450330
             links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
             links = links[:3]  # Limit to a maximum of 3 links
-            caption = f"Title - {custom_caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            caption = re.sub(r"https?://[^\s]+", "", custom_caption).strip()  # Remove the link from the caption
+            caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
