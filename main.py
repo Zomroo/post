@@ -86,8 +86,7 @@ def handle_callback(client, callback_query):
             channel_id = -1001424450330
             links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
             links = links[:3]  # Limit to a maximum of 3 links
-            caption = custom_caption.strip()  # Use the custom caption as the title
-            caption = re.sub(r"https?://[^\s]+", "", caption).strip()  # Remove the link from the caption
+            caption = re.sub(r"https?://[^\s]+", "", custom_caption).strip()  # Remove the link from the caption
             caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
@@ -97,8 +96,7 @@ def handle_callback(client, callback_query):
             channel_id = -1001424450330
             links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
             links = links[:3]  # Limit to a maximum of 3 links
-            caption = custom_caption.strip()  # Use the custom caption as the title
-            caption = re.sub(r"https?://[^\s]+", "", caption).strip()  # Remove the link from the caption
+            caption = re.sub(r"https?://[^\s]+", "", custom_caption).strip()  # Remove the link from the caption
             caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
@@ -106,10 +104,14 @@ def handle_callback(client, callback_query):
         
         # Delete the confirmation message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
+        # Reset the custom_caption variable
+        custom_caption = ""
     
     elif action == 'cancel':
         # Delete the confirmation message and the original message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.id, message_id])
+        # Reset the custom_caption variable
+        custom_caption = ""
 
 # Start the bot
 app.run()
