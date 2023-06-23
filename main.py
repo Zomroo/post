@@ -8,15 +8,12 @@ bot_token = '5615528335:AAFrJcGIItkdEvMZREvOi3LgLKeNHu9Md2c'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-
 # Authorized users
 authorized_users = [5500572462, 5205602399, 1938491135]  # Replace with your authorized user IDs
-
 
 # Check if user is authorized
 def is_authorized(user_id):
     return user_id in authorized_users
-
 
 # Handler for incoming messages
 @app.on_message(filters.private)
@@ -86,8 +83,8 @@ def handle_callback(client, callback_query):
             caption_links = message.caption.split('\n')
             buttons = []
             for i in range(min(3, len(caption_links))):
-                buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
-            keyboard = InlineKeyboardMarkup([buttons])
+                buttons.append([InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i])])
+            keyboard = InlineKeyboardMarkup(buttons)
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
@@ -95,8 +92,8 @@ def handle_callback(client, callback_query):
             links = message.text if message.text.startswith('http') else message.caption
             links = links.split('\n')[:3] if links else []  # Limit to a maximum of 3 links
             caption = f"{message.caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
-            keyboard = InlineKeyboardMarkup([buttons])
+            buttons = [[InlineKeyboardButton(text=f"Link {i+1}", url=link)] for i, link in enumerate(links)]
+            keyboard = InlineKeyboardMarkup(buttons)
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
         
         # Delete the confirmation message
