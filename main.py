@@ -119,7 +119,7 @@ def handle_callback(client, callback_query):
                 client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
 
             # Delete the confirmation message
-            client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.message_id)
+            client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
     
     elif action == 'cancel':
         # Delete the confirmation message and the original message
