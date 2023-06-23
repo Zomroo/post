@@ -1,3 +1,4 @@
+import re
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -27,10 +28,14 @@ def handle_message(client, message):
     if not is_authorized(message.from_user.id):
         return  # Ignore non-authorized users
 
+    if message.text and not message.text.startswith('http'):
+        custom_caption = message.text
+
     if message.text:
-        # Check if the message contains a link in text
-        if message.text.startswith('http'):
-            link = message.text
+        # Check if the message contains a link using regular expressions
+        links = re.findall(r"(?P<url>https?://[^\s]+)", message.text)
+        if links:
+            link = links[0]  # Assuming only one link in the message
 
             # Ask for confirmation
             confirmation_message = f"Are you sure you want to send this link?"
@@ -39,14 +44,12 @@ def handle_message(client, message):
             keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
-        else:
-            # Store the custom caption
-            custom_caption = message.text
     
     if message.caption:
-        # Check if the message contains a link in caption
-        if message.caption.startswith('http'):
-            link = message.caption
+        # Check if the message contains a link in the caption using regular expressions
+        links = re.findall(r"(?P<url>https?://[^\s]+)", message.caption)
+        if links:
+            link = links[0]  # Assuming only one link in the caption
 
             # Ask for confirmation
             confirmation_message = f"Are you sure you want to send this link?"
@@ -55,9 +58,6 @@ def handle_message(client, message):
             keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
-        else:
-            # Store the custom caption
-            custom_caption = message.caption
     
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
@@ -85,15 +85,17 @@ def handle_callback(client, callback_query):
             # Copy the image and link to the target channel
             channel_id = -1001424450330
             caption = f"Title - {custom_caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            caption_links = re.findall(r"(?P<url>https?://[^\s]+)", message.caption)
             buttons = []
             for i in range(min(3, len(caption_links))):
                 buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
-        elif message.text:
+        else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
-            links = message.text if message.text.startswith('http') else message.caption
+            links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
+            links = links[:3]  # Limit to a maximum of 3 links
             caption = f"Title - {custom_caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
