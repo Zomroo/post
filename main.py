@@ -40,7 +40,7 @@ def handle_message(client, message):
         cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
         keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
-        client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard, caption=title)
+        client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard, caption=caption)
     
     if message.caption:
         lines = message.caption.split('\n')
