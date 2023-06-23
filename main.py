@@ -87,7 +87,7 @@ def handle_callback(client, callback_query):
             links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
             links = links[:3]  # Limit to a maximum of 3 links
             caption = custom_caption.strip()  # Use the custom caption as the title
-            caption = f"{caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
@@ -97,7 +97,7 @@ def handle_callback(client, callback_query):
             links = re.findall(r"(?P<url>https?://[^\s]+)", message.text or message.caption)
             links = links[:3]  # Limit to a maximum of 3 links
             caption = custom_caption.strip()  # Use the custom caption as the title
-            caption = f"{caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            caption = f"Title - {caption}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
