@@ -26,33 +26,29 @@ def handle_message(client, message):
         return  # Ignore non-authorized users
 
     if message.text:
-        lines = message.text.strip().split('\n')
-        if len(lines) >= 3 and lines[2].startswith('http'):
-            title = lines[0] if lines[0] else None
-            links = lines[2:][:3]  # Limit to a maximum of 3 links
-
-            # Ask for confirmation
-            confirmation_message = f"Are you sure you want to send these links?"
-            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
-
-            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
-
+        # Check if the message contains a link in text
+        if message.text.startswith('http'):
+            links = message.text.split('\n')
+            if len(links) > 1:
+                title = links[0]  # Extract the title from the first line
+                caption_links = links[1:4]  # Limit to a maximum of 3 links
+                caption = f"{title}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+                buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(caption_links)]
+                keyboard = InlineKeyboardMarkup([buttons])
+                client.send_message(chat_id=message.chat.id, text=caption, reply_markup=keyboard)
+    
     if message.caption:
-        lines = message.caption.strip().split('\n')
-        if len(lines) >= 3 and lines[2].startswith('http'):
-            title = lines[0] if lines[0] else None
-            links = lines[2:][:3]  # Limit to a maximum of 3 links
-
-            # Ask for confirmation
-            confirmation_message = f"Are you sure you want to send these links?"
-            confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
-            cancel_button = InlineKeyboardButton(text="Cancel", callback_data=f"cancel_{message.id}")
-            keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
-
-            client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
-
+        # Check if the message contains a link in caption
+        if message.caption.startswith('http'):
+            links = message.caption.split('\n')
+            if len(links) > 1:
+                title = links[0]  # Extract the title from the first line
+                caption_links = links[1:4]  # Limit to a maximum of 3 links
+                caption = f"{title}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+                buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(caption_links)]
+                keyboard = InlineKeyboardMarkup([buttons])
+                client.send_message(chat_id=message.chat.id, text=caption, reply_markup=keyboard)
+    
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
@@ -68,33 +64,35 @@ def handle_callback(client, callback_query):
     callback_data = callback_query.data.split('_')
     action = callback_data[0]
     message_id = int(callback_data[1])
-
+    
     if action == 'confirm':
         # Get the original message
         message = client.get_messages(chat_id=callback_query.message.chat.id, message_ids=message_id)
-
+        
         if message.photo:
             # Copy the image and link to the target channel
             channel_id = -1001424450330
-            caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            lines = message.caption.strip().split('\n') if message.caption else []
-            links = lines[2:][:3] if len(lines) >= 3 and lines[2].startswith('http') else []
-            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
+            title = message.caption.split('\n')[0]
+            caption_links = message.caption.split('\n')[1:4]  # Limit to a maximum of 3 links
+            caption = f"{title}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(caption_links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
-            caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
-            lines = message.caption.strip().split('\n') if message.caption else []
-            links = lines[2:][:3] if len(lines) >= 3 and lines[2].startswith('http') else []
-            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
+            links = message.text if message.text.startswith('http') else message.caption
+            links = links.split('\n')[:3]  # Limit to a maximum of 3 links
+            title = links[0]  # Extract the title from the first line
+            caption_links = links[1:4]  # Limit to a maximum of 3 links
+            caption = f"{title}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
+            buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(caption_links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
-
+        
         # Delete the confirmation message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=callback_query.message.id)
-
+    
     elif action == 'cancel':
         # Delete the confirmation message and the original message
         client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.id, message_id])
