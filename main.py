@@ -77,7 +77,7 @@ async def handle_callback_query(client, callback_query):
                     "-1001424450330",
                     photo.file_id,
                     caption=caption,
-                    reply_to_message_id=copied_message.message_id,
+                    reply_to_message_id=copied_message.id,
                 )
 
     # Check if the callback is for canceling the message
