@@ -8,7 +8,6 @@ bot_token = '5615528335:AAFrJcGIItkdEvMZREvOi3LgLKeNHu9Md2c'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-
 # Authorized users
 authorized_users = [5500572462, 5205602399, 1938491135]  # Replace with your authorized user IDs
 
@@ -82,6 +81,7 @@ def handle_callback(client, callback_query):
         if message.photo:
             # Copy the image and link to the target channel
             channel_id = -1001424450330
+            links = [line for line in message.caption.split('\n') if line.startswith('http')]
             caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
@@ -89,7 +89,8 @@ def handle_callback(client, callback_query):
         else:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
-            caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl\n{caption}"
+            links = [line for line in message.caption.split('\n') if line.startswith('http')]
+            caption = f"Join Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl\n{message.caption}"
             buttons = [InlineKeyboardButton(text=f"Link {i+1}", url=link) for i, link in enumerate(links)]
             keyboard = InlineKeyboardMarkup([buttons])
             client.send_message(chat_id=channel_id, text=caption, reply_markup=keyboard)
