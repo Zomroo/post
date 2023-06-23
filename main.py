@@ -103,7 +103,7 @@ def handle_callback(client, callback_query):
             title = message_data_dict['title']
             links = message_data_dict['links']
 
-            if 'photo' in callback_query.message:
+            if callback_query.message.photo:
                 # Copy the image and links to the target channel
                 channel_id = -1001424450330
                 caption = f"{title}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl\n\n" + "\n".join(links[:3])
