@@ -73,7 +73,7 @@ def handle_callback(client, callback_query):
         
         if message.photo:
             # Copy the image and link to the target channel
-            channel_id = -1001959451716
+            channel_id = -1001424450330
             caption_links = message.caption.split('\n')
             links = caption_links[:3]  # Limit to a maximum of 3 links
             text = '\n'.join(caption_links[3:])  # Extract the additional text
@@ -85,7 +85,7 @@ def handle_callback(client, callback_query):
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links and additional text as a message to the target channel
-            channel_id = -1001959451716
+            channel_id = -1001424450330
             links = message.text if message.text.startswith('http') else message.caption
             links = links.split('\n')[:3]  # Limit to a maximum of 3 links
             text = '\n'.join(links[3:])  # Extract the additional text
