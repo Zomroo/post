@@ -45,15 +45,17 @@ def handle_message(client, message):
         keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
         if message.photo:
-            # Store the photo ID in the message data dictionary
-            message_data[message.id] = {"title": title, "links": links, "photo": message.photo.file_id}
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+            # Store the photo ID in the message data dictionary
+            message_data[message.id] = {"title": title, "links": links, "photo_id": message.photo.file_id}
         else:
-            # Store the title and links in the message data dictionary
-            message_data[message.id] = {"title": title, "links": links}
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
 
-        # Delete the message if it doesn't contain a link
+        # Store the title and links in the message data dictionary
+        message_data[message.id] = {"title": title, "links": links}
+
+    # Delete the message if it doesn't contain a link
+    if not (message.text or message.caption):
         client.delete_messages(chat_id=message.chat.id, message_ids=message.id)
 
 
@@ -73,7 +75,7 @@ def handle_callback(client, callback_query):
         message_data_dict = message_data.get(message_id)
 
         if message_data_dict:
-            if 'photo' in message_data_dict:
+            if 'photo_id' in message_data_dict:
                 # Copy the image and link to the target channel
                 channel_id = -1001424450330
                 caption = f"{message_data_dict['title']}\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl"
@@ -81,7 +83,7 @@ def handle_callback(client, callback_query):
                 for i, link in enumerate(message_data_dict['links'][:3]):
                     buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=link))
                 keyboard = InlineKeyboardMarkup([buttons])
-                client.send_photo(chat_id=channel_id, photo=message_data_dict['photo'], caption=caption, reply_markup=keyboard)
+                client.send_photo(chat_id=channel_id, photo=message_data_dict['photo_id'], caption=caption, reply_markup=keyboard)
             else:
                 # Send the links as a message to the target channel
                 channel_id = -1001424450330
