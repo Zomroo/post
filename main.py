@@ -37,7 +37,7 @@ def handle_message(client, message):
             links = [message.text]
         else:
             links = [link for link in lines[1:] if link.strip().startswith('http')]
-
+        
         # Ask for confirmation
         confirmation_message = f"Are you sure you want to send this link?"
         confirm_button = InlineKeyboardButton(text="Confirm", callback_data=f"confirm_{message.id}")
@@ -49,8 +49,8 @@ def handle_message(client, message):
         else:
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
 
-        # Store the title, links, and photo in the message data dictionary
-        message_data[message.id] = {"title": title, "links": links, "photo": message.photo}
+        # Store the title and links in the message data dictionary
+        message_data[message.id] = {"title": title, "links": links}
 
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
