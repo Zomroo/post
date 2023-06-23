@@ -27,9 +27,6 @@ def handle_message(client, message):
     if not is_authorized(message.from_user.id):
         return  # Ignore non-authorized users
 
-    if message.text and not message.text.startswith('http'):
-        custom_caption = message.text
-
     if message.text:
         # Check if the message contains a link in text
         if message.text.startswith('http'):
@@ -42,6 +39,9 @@ def handle_message(client, message):
             keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+        else:
+            # Store the custom caption
+            custom_caption = message.text
     
     if message.caption:
         # Check if the message contains a link in caption
@@ -55,6 +55,9 @@ def handle_message(client, message):
             keyboard = InlineKeyboardMarkup([[confirm_button, cancel_button]])
 
             client.send_message(chat_id=message.chat.id, text=confirmation_message, reply_markup=keyboard)
+        else:
+            # Store the custom caption
+            custom_caption = message.caption
     
     # Delete the message if it doesn't contain a link
     if not (message.text or message.caption):
@@ -88,7 +91,7 @@ def handle_callback(client, callback_query):
                 buttons.append(InlineKeyboardButton(text=f"Link {i+1}", url=caption_links[i]))
             keyboard = InlineKeyboardMarkup([buttons])
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
-        else:
+        elif message.text:
             # Send the links as a message to the target channel
             channel_id = -1001424450330
             links = message.text if message.text.startswith('http') else message.caption
