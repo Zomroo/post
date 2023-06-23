@@ -15,17 +15,17 @@ authorized_users = [5500572462, 5205602399, 1938491135]  # Replace with your aut
 def is_authorized(user_id):
     return user_id in authorized_users
 
-# Global variable to store custom caption
+# Custom caption variable
 custom_caption = ""
 
 # Handler for incoming messages
 @app.on_message(filters.private)
 def handle_message(client, message):
+    global custom_caption  # Access the global variable
+
     # Check if user is authorized
     if not is_authorized(message.from_user.id):
         return  # Ignore non-authorized users
-
-    global custom_caption
 
     if message.text and not message.text.startswith('http'):
         custom_caption = message.text
@@ -68,8 +68,6 @@ def handle_callback(client, callback_query):
     if not is_authorized(callback_query.from_user.id):
         return  # Ignore non-authorized users
 
-    global custom_caption
-
     callback_data = callback_query.data.split('_')
     action = callback_data[0]
     message_id = int(callback_data[1])
@@ -78,6 +76,8 @@ def handle_callback(client, callback_query):
         # Get the original message
         message = client.get_messages(chat_id=callback_query.message.chat.id, message_ids=message_id)
         
+        global custom_caption  # Access the global variable
+
         if message.photo:
             # Copy the image and link to the target channel
             channel_id = -1001424450330
