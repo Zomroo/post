@@ -4,13 +4,13 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 # Create a Pyrogram client
 api_id = 14091414
 api_hash = '1e26ebacf23466ed6144d29496aa5d5b'
-bot_token = '5615528335:AAFrJcGIItkdEvMZREvOi3LgLKeNHu9Md2c'
+bot_token = '7162920629:AAHlFoKiOUVYapCFa2sYcS1eE8pRWfMGUn8'
 
 app = Client("my_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 
 # Authorized users
-authorized_users = [5500572462, 5205602399, 1938491135, 5589385763]  # Replace with your authorized user IDs
+authorized_users = [6413149181, 5205602399, 1938491135, 5589385763]  # Replace with your authorized user IDs
 
 
 # Check if user is authorized
@@ -83,7 +83,7 @@ def handle_callback(client, callback_query):
             client.copy_message(chat_id=channel_id, from_chat_id=message.chat.id, message_id=message.id, caption=caption, reply_markup=keyboard)
         else:
             # Send the links as a message to the target channel
-            channel_id = -1001959451716
+            channel_id = -1002141543698
             links = message.text if message.text.startswith('http') else message.caption
             links = links.split('\n')[:3]  # Limit to a maximum of 3 links
             caption = f"**Title** : `Leaks` \n\n\nJoin Backup Channel - https://t.me/+jUtnpvdlE9AwZTRl\n\n**Click On The Button Below To Get The Videos**"
